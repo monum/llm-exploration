@@ -1,9 +1,10 @@
 import os, streamlit as st
 import logging
+from fpdf import FPDF
+
 
 # Uncomment to specify your OpenAI API key here (local testing only, not in production!), or add corresponding environment variable (recommended)
 # os.environ['OPENAI_API_KEY']= ""
-os.environ['OPENAI_API_KEY']= "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"
 
 from llama_index import StorageContext, load_index_from_storage
 
@@ -155,3 +156,54 @@ if st.session_state.summary:
 
             st.subheader("Summary")
             st.markdown(summary)
+
+            pdf = FPDF('P', 'mm', 'A4')
+            pdf.add_page()
+
+            pdf.set_font(family='Arial', style='B', size=18)
+            pdf.multi_cell(0, 5, topic, 0, 1)
+
+            pdf.set_font(family='Arial', size=14)
+            pdf.multi_cell(0, 5, organization, 0, 1)
+            pdf.ln()
+
+            pdf.set_font(family='Arial', style='B', size=16)
+            pdf.multi_cell(0, 5, 'Statement of Need', 0, 1)
+
+            pdf.set_font(family='Arial', size=12)
+            pdf.multi_cell(0, 5, statement_of_need, 0, 1)
+            pdf.ln()
+
+            pdf.set_font(family='Arial', style='B', size=16)
+            pdf.multi_cell(0, 5, 'Quick Description', 0, 1)
+
+            pdf.set_font(family='Arial', size=12)
+            pdf.multi_cell(0, 5, quick_description, 0, 1)
+            pdf.ln()
+
+            pdf.set_font(family='Arial', style='B', size=16)
+            pdf.multi_cell(0, 5, 'Expectations', 0, 1)
+
+            pdf.set_font(family='Arial', size=12)
+            pdf.multi_cell(0, 5, expectations, 0, 1)
+            pdf.ln()
+
+            pdf.set_font(family='Arial', style='B', size=16)
+            pdf.multi_cell(0, 5, 'Summary', 0, 1)
+
+            pdf.set_font(family='Arial', size=12)
+            pdf.multi_cell(0, 5, summary, 0, 1)
+            pdf.ln()
+
+            pdf.output('rfp.pdf', 'F')
+
+            with open("rfp.pdf", "rb") as pdf_file:
+                PDFbyte = pdf_file.read()
+
+
+            st.download_button(
+                'Download PDF',
+                data=PDFbyte,
+                file_name='rfp.pdf',
+                mime='application/octet-stream'
+            )
