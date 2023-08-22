@@ -8,3 +8,6 @@ For a step-by-step guide, see [this](https://alphasec.io/query-your-own-document
 # Running locally
 1. pip install -r requirements.txt
 2. streamlit run index.py
+
+# TODO
+1. Add tests
