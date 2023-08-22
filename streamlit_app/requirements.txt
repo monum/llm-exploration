@@ -1,3 +1,4 @@
 streamlit==1.24.0
 llama-index==0.6.13
 transformers==4.30.2
+fpdf==1.7.2
