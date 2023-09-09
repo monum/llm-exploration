@@ -7,4 +7,7 @@ The Mayor's Office of New Urban Mechanics is focused on creating innovative and 
 Project contributors:
 
 [Michael Evans](https://www.boston.gov/departments/new-urban-mechanics/michael-evans)
+
 [Michael McKenna Miller](https://www.linkedin.com/in/mckennamiller/)
+
+[Chirag Mahapatra](https://www.linkedin.com/in/chiragmahapatra/)
