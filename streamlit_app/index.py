@@ -20,11 +20,12 @@ organization = st.text_input(
     label="What is the organization you are writing the RFP for?",
     placeholder="City of San Francisco",
 )
+background_information = st.text_area(label="Background Information", height=100)
 
-if "statement_of_need" not in st.session_state:
-    st.session_state.statement_of_need = ""
 if "quick_description" not in st.session_state:
     st.session_state.quick_description = ""
+if "statement_of_need" not in st.session_state:
+    st.session_state.statement_of_need = ""
 if "expectations" not in st.session_state:
     st.session_state.expectations = ""
 if "summary" not in st.session_state:
@@ -42,51 +43,56 @@ def generate_text(query):
 
 
 # If the 'Submit' button is clicked
-if st.button("Generate Statement of Need"):
+if st.button("Generate Quick Description"):
     if not topic.strip():
         st.error(f"Please provide the RFP topic.")
     elif not organization.strip():
         st.error(f"Please provide the organization.")
+    elif not background_information.strip():
+        st.error(f"Please provide background information.")
     else:
         try:
             query = f"""
-            Write a statement of need for a RFP for {topic} for {organization}
-            in 1-3 sentences.
+            Background information: {background_information}
+            Write a quick description for the scope of work section for a RFP for {topic} for {organization} in one sentence.
             
             End with the following sentence: We look forward to receiving your proposal.
             """
             response = generate_text(query)
-            st.session_state.statement_of_need = response
+            st.session_state.quick_description = response
         except Exception as e:
             st.error(f"An error occurred: {e}")
 
 
-if st.session_state.statement_of_need:
+if st.session_state.quick_description:
     st.markdown("""---""")
-    statement_of_need = st.text_area(label="Statement of Need", value=st.session_state.statement_of_need, height=100)
+    st.info("Please update the Quick Description as appropriate")
+    quick_description = st.text_area(label="Quick Description", value=st.session_state.quick_description, height=100)
 
-    if st.button("Generate Quick Description"):
-        if not statement_of_need.strip():
-            st.error(f"Please generate Statement of Need first.")
+    if st.button("Generate Statement of Need"):
+        if not quick_description.strip():
+            st.error(f"Please generate Quick Description first.")
         else:
             try:
                 query = f"""
-                Write a quick description for the scope of work section for a RFP for {topic} for {organization} in one sentence.
+                Background information: {background_information}
+                Write a statement of need for a RFP for {topic} for {organization} in 1-3 sentences.
 
-                Previous response: {statement_of_need}
+                Previous response: {quick_description}
                 """
                 response = generate_text(query)
-                st.session_state.quick_description = response
+                st.session_state.statement_of_need = response
                 logging.info(
-                    f"Quick description: {st.session_state.quick_description}"
+                    f"Quick description: {st.session_state.statement_of_need}"
                 )
             except Exception as e:
                 st.error(f"An error occurred: {e}")
 
 
-if st.session_state.quick_description:
+if st.session_state.statement_of_need:
     st.markdown("""---""")
-    quick_description = st.text_area(label="Quick Description", value=st.session_state.quick_description, height=100)
+    st.info("Please update the State of Need as appropriate")
+    statement_of_need = st.text_area(label="Statement of Need", value=st.session_state.statement_of_need, height=100)
 
     if st.button("Generate Expectations"):
         if not quick_description.strip():
@@ -94,11 +100,12 @@ if st.session_state.quick_description:
         else:
             try:
                 query = f"""
+                Background information: {background_information}
                 Write the expectations the scope of work section for a RFP for {topic} for {organization} in multiple paragraphs with titles: Materials/Resources, Services, Labor, Quality criteria for this component
 
                 Response so far:
-                {statement_of_need}
                 {quick_description}
+                {statement_of_need}
                 """
                 response = generate_text(query)
                 st.session_state.expectations = response
@@ -111,6 +118,7 @@ if st.session_state.quick_description:
 
 if st.session_state.expectations:
     st.markdown("""---""")
+    st.info("Please update the Expectations as appropriate")
     expectations = st.text_area(label="Expectations", value=st.session_state.expectations, height=500)
 
     if st.button("Generate Summary"):
@@ -119,11 +127,12 @@ if st.session_state.expectations:
         else:
             try:
                 query = f"""
+                Background information: {background_information}
                 Write a project summary for a RFP for {topic} for {organization} in 1-3 sentences.
 
                 Response so far:
-                {statement_of_need}
                 {quick_description}
+                {statement_of_need}
                 {expectations}
                 """
                 response = generate_text(query)
@@ -136,6 +145,7 @@ if st.session_state.expectations:
 
 if st.session_state.summary:
     st.markdown("""---""")
+    st.info("Please update the Summary as appropriate")
     summary = st.text_area(label="Summary", value=st.session_state.summary, height=200)
 
     if st.button("Put it all together!"):
@@ -144,12 +154,13 @@ if st.session_state.summary:
         else:
             st.header(topic)
             st.caption(organization)
-
-            st.subheader("Statement of Need")
-            st.markdown(statement_of_need)
+            st.markdown(background_information)
 
             st.subheader("Quick Description")
             st.markdown(quick_description)
+
+            st.subheader("Statement of Need")
+            st.markdown(statement_of_need)
 
             st.subheader("Expectations")
             st.markdown(expectations)
@@ -163,15 +174,12 @@ if st.session_state.summary:
             pdf.set_font(family='Arial', style='B', size=18)
             pdf.multi_cell(0, 5, topic, 0, 1)
 
-            pdf.set_font(family='Arial', size=14)
+            pdf.set_font(family='Arial', style='B', size=14)
             pdf.multi_cell(0, 5, organization, 0, 1)
             pdf.ln()
 
-            pdf.set_font(family='Arial', style='B', size=16)
-            pdf.multi_cell(0, 5, 'Statement of Need', 0, 1)
-
-            pdf.set_font(family='Arial', size=12)
-            pdf.multi_cell(0, 5, statement_of_need, 0, 1)
+            pdf.set_font(family='Arial', size=14)
+            pdf.multi_cell(0, 5, background_information, 0, 1)
             pdf.ln()
 
             pdf.set_font(family='Arial', style='B', size=16)
@@ -179,6 +187,13 @@ if st.session_state.summary:
 
             pdf.set_font(family='Arial', size=12)
             pdf.multi_cell(0, 5, quick_description, 0, 1)
+            pdf.ln()
+
+            pdf.set_font(family='Arial', style='B', size=16)
+            pdf.multi_cell(0, 5, 'Statement of Need', 0, 1)
+
+            pdf.set_font(family='Arial', size=12)
+            pdf.multi_cell(0, 5, statement_of_need, 0, 1)
             pdf.ln()
 
             pdf.set_font(family='Arial', style='B', size=16)
